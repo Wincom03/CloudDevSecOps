@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing tfsec...
+      - curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+
+  build:
+    commands:
+      - echo Running tfsec scan...
+      - tfsec --format json --out tfsec-report.json --soft-fail .
+
+  post_build:
+    commands:
+      - echo Uploading tfsec JSON report to S3...
+      - aws s3 cp tfsec-report.json s3://mytfsecreport/reports/tfsec-report.json
+
+artifacts:
+  files:
+    - tfsec-report.json
